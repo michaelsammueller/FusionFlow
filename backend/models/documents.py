@@ -29,7 +29,7 @@ class Document(Base):
     title = Column(String(200))
     description = Column(Text)
     document_number = Column(String(100))  # Certificate number, invoice number, etc.
-    version = Column(String(20, default="1.0"))
+    version = Column(String(20), default="1.0")
 
     # Dates
     document_date = Column(DateTime)  # Date on the document

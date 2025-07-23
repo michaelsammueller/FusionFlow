@@ -1,14 +1,15 @@
-# Backend Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# Flask Framework
+flask==2.3.3
+flask-login==0.6.2
+flask-sqlalchemy==3.0.5
+werkzeug==2.3.7
 
 # Database & ORM
 sqlalchemy==2.0.23
 alembic==1.12.1
 pydantic==2.5.0
 
-# Frontend
-streamlit==1.37.0
+# Data Processing & Visualization (kept for analytics)
 plotly==5.17.0
 pandas==2.1.3
 

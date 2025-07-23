@@ -47,7 +47,7 @@ class Project(Base):
     # Compliance and certification
     requires_certification = Column(Boolean, default=False)
     certification_status = Column(String(50))  # Pending, In Progress, Approved, Rejected
-    regulatory_authority = Column(Strings(100))  # QCAA, EASA, FAA, etc.
+    regulatory_authority = Column(String(100))  # QCAA, EASA, FAA, etc.
 
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)

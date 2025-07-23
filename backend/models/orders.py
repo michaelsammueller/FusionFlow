@@ -7,7 +7,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_number = Column(Strings(50), unique=True, nullable=False, index=True)
+    order_number = Column(String(50), unique=True, nullable=False, index=True)
     po_number = Column(String(50), index=True)  # Purchase Order Number
     rfq_number = Column(String(50))  # Request for Quote reference
 
@@ -127,5 +127,5 @@ class Order(Base):
     created_by_user = relationship("User", back_populates="created_orders")
     shipments = relationship("Shipment", back_populates="order", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="order", cascade="all, delete-orphan")
-    cost_breakdown = relationship("CostBreakdown", back_populates="order", cascade="all, delete-orphan")
-    custom_entries = relationship("CustomsEntry", back_populates="order", cascade="all, delete-orphan")
+    cost_breakdowns = relationship("CostBreakdown", back_populates="order", cascade="all, delete-orphan")
+    customs_entries = relationship("CustomsEntry", back_populates="order", cascade="all, delete-orphan")

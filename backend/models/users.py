@@ -31,4 +31,14 @@ class User(Base):
     created_projects = relationship("Project", foreign_keys="Project.created_by_id", back_populates="created_by_user")
     managed_projects = relationship("Project", foreign_keys="Project.project_manager_id", back_populates="project_manager_user")
     created_orders = relationship("Order", back_populates="created_by_user")
-    notifications = relationship("Notification", back_populates="user")
+    notifications = relationship(
+        "Notification",
+        back_populates="user",
+        foreign_keys="[Notification.user_id]"
+    )
+
+    # Optionally, add this for escalated notifications
+    escalated_notifications = relationship(
+        "Notification",
+        foreign_keys="[Notification.escalated_to_user_id]"
+    )
