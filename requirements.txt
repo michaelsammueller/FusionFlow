@@ -55,3 +55,6 @@ forex-python==1.8
 
 # Memory profiling (development)
 memory-profiler==0.61.0
+
+#Performance
+watchdog==6.0.0
