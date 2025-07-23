@@ -2,7 +2,7 @@
 flask==2.3.3
 flask-login==0.6.2
 flask-sqlalchemy==3.0.5
-werkzeug==2.3.7
+werkzeug==3.0.6
 
 # Database & ORM
 sqlalchemy==2.0.23
