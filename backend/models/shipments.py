@@ -125,6 +125,7 @@ class Shipment(Base):
     customs_entries = relationship("CustomsEntry", back_populates="shipment", cascade="all, delete-orphan")
     assigned_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     assigned_user = relationship("User", foreign_keys=[assigned_user_id])
+    assigned_by = Column(String(100))  # Username or user id of assigner
 
 class ShipmentStatusHistory(Base):
     __tablename__ = "shipment_status_history"

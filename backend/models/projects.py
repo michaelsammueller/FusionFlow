@@ -39,6 +39,7 @@ class Project(Base):
     project_manager_id = Column(Integer, ForeignKey("users.id"))
     created_by_id = Column(Integer, ForeignKey("users.id"))
     assigned_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assigned_by = Column(String(100))  # Username or user id of assigner
 
     # Location information
     installation_location = Column(String(200))

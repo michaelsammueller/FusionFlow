@@ -9,7 +9,10 @@
         <ul class="list-group mb-3">
             {% for project in projects %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{{ url_for('projects.view_project', project_id=project.id) }}">{{ project.name }}</a>
+                <div>
+                    <a href="{{ url_for('projects.view_project', project_id=project.id) }}">{{ project.name }}</a>
+                    <br><small>Assigned by: {{ project.assigned_by if project.assigned_by else 'Unknown' }}</small>
+                </div>
                 <span class="badge bg-primary">Project</span>
             </li>
             {% endfor %}
@@ -24,7 +27,10 @@
         <ul class="list-group mb-3">
             {% for order in orders %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{{ url_for('orders.view_order', order_id=order.id) }}">Order #{{ order.order_number }}</a>
+                <div>
+                    <a href="{{ url_for('orders.view_order', order_id=order.id) }}">Order #{{ order.order_number }}</a>
+                    <br><small>Assigned by: {{ order.assigned_by if order.assigned_by else 'Unknown' }}</small>
+                </div>
                 <span class="badge bg-success">Order</span>
             </li>
             {% endfor %}
@@ -39,7 +45,10 @@
         <ul class="list-group mb-3">
             {% for shipment in shipments %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="{{ url_for('shipments.view_shipment', shipment_id=shipment.id) }}">Shipment #{{ shipment.tracking_number }}</a>
+                <div>
+                    <a href="{{ url_for('shipments.view_shipment', shipment_id=shipment.id) }}">Shipment #{{ shipment.tracking_number }}</a>
+                    <br><small>Assigned by: {{ shipment.assigned_by if shipment.assigned_by else 'Unknown' }}</small>
+                </div>
                 <span class="badge bg-info text-dark">Shipment</span>
             </li>
             {% endfor %}

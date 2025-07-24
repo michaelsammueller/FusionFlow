@@ -57,6 +57,16 @@ def migrate_add_level_to_audit_logs(engine):
             conn.execute(sa.text('ALTER TABLE audit_logs ADD COLUMN level VARCHAR(20) DEFAULT "info"'))
     print('Migration: level column added to audit_logs.')
 
+def migrate_add_assigned_by_to_assignables(engine):
+    meta = MetaData()
+    meta.reflect(bind=engine)
+    for table_name in ['projects', 'orders', 'shipments']:
+        table = meta.tables.get(table_name)
+        if table is not None and 'assigned_by' not in table.c:
+            with engine.connect() as conn:
+                conn.execute(sa.text(f'ALTER TABLE {table_name} ADD COLUMN assigned_by VARCHAR(100)'))
+    print('Migration: assigned_by column added to projects, orders, shipments.')
+
 def create_database(recreate=False, seed=False):
     """
     Create the database and all tables.

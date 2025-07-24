@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from backend.database import SessionLocal
 from backend.models import User, Project, Order, Shipment
@@ -138,6 +138,7 @@ def assign_user(user_id):
                 project = db.query(Project).get(int(project_id))
                 if project:
                     project.assigned_user_id = user.id
+                    project.assigned_by = current_user.full_name
                     assigned = True
                     notif = Notification(
                         user_id=user.id,
@@ -153,6 +154,7 @@ def assign_user(user_id):
                 order = db.query(Order).get(int(order_id))
                 if order:
                     order.assigned_user_id = user.id
+                    order.assigned_by = current_user.full_name
                     assigned = True
                     notif = Notification(
                         user_id=user.id,
@@ -168,6 +170,7 @@ def assign_user(user_id):
                 shipment = db.query(Shipment).get(int(shipment_id))
                 if shipment:
                     shipment.assigned_user_id = user.id
+                    shipment.assigned_by = current_user.full_name
                     assigned = True
                     notif = Notification(
                         user_id=user.id,
@@ -197,6 +200,10 @@ def assignments():
         projects = db.query(Project).filter(Project.assigned_user_id == current_user.id).all()
         orders = db.query(Order).filter(Order.assigned_user_id == current_user.id).all()
         shipments = db.query(Shipment).filter(Shipment.assigned_user_id == current_user.id).all()
+        # Pass assigned_by for each
+        projects = [{**p.__dict__, 'assigned_by': p.assigned_by} for p in projects]
+        orders = [{**o.__dict__, 'assigned_by': o.assigned_by} for o in orders]
+        shipments = [{**s.__dict__, 'assigned_by': s.assigned_by} for s in shipments]
         return render_template('users/assignments.html', projects=projects, orders=orders, shipments=shipments)
     finally:
         db.close()
@@ -211,6 +218,32 @@ def logs():
     try:
         logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).all()
         return render_template('users/logs.html', logs=logs)
+    finally:
+        db.close()
+
+@users_bp.route('/notifications/unread', methods=['GET', 'POST'])
+@login_required
+def unread_notifications():
+    db = get_db()
+    try:
+        if request.method == 'POST':
+            notifs = db.query(Notification).filter(Notification.user_id == current_user.id, Notification.is_read == False).all()
+            for n in notifs:
+                n.is_read = True
+                n.read_at = datetime.utcnow()
+            db.commit()
+            return '', 204
+        notifs = db.query(Notification).filter(Notification.user_id == current_user.id, Notification.is_read == False).order_by(Notification.created_at.desc()).all()
+        notif_list = [
+            {
+                'id': n.id,
+                'title': n.title,
+                'message': n.message,
+                'action_url': n.action_url,
+                'created_at': n.created_at.strftime('%d/%m/%Y %H:%M'),
+            } for n in notifs
+        ]
+        return jsonify({'unread': notif_list})
     finally:
         db.close()
 

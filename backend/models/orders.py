@@ -131,3 +131,4 @@ class Order(Base):
     cost_breakdowns = relationship("CostBreakdown", back_populates="order", cascade="all, delete-orphan")
     customs_entries = relationship("CustomsEntry", back_populates="order", cascade="all, delete-orphan")
     assigned_user = relationship("User", foreign_keys=[assigned_user_id])
+    assigned_by = Column(String(100))  # Username or user id of assigner
