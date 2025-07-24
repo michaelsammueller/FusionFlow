@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Edit Shipment - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Edit Shipment</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="order_id" class="form-label">Order</label>
+                <input type="text" class="form-control" id="order_id" name="order_id" value="{{ shipment.order.order_number if shipment.order else '' }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="tracking_number" class="form-label">Tracking Number</label>
+                <input type="text" class="form-control" id="tracking_number" name="tracking_number" value="{{ shipment.tracking_number }}" required readonly>
+            </div>
+            <div class="mb-3">
+                <label for="carrier" class="form-label">Carrier</label>
+                <input type="text" class="form-control" id="carrier" name="carrier" value="{{ shipment.carrier }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="service_type" class="form-label">Service Type</label>
+                <input type="text" class="form-control" id="service_type" name="service_type" value="{{ shipment.service_type }}">
+            </div>
+            <div class="mb-3">
+                <label for="origin_address" class="form-label">Origin Address</label>
+                <textarea class="form-control" id="origin_address" name="origin_address" rows="2" required>{{ shipment.origin_address }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="destination_address" class="form-label">Destination Address</label>
+                <textarea class="form-control" id="destination_address" name="destination_address" rows="2" required>{{ shipment.destination_address }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

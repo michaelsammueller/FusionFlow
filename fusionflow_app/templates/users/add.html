@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Add User - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Add User</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="admin">Admin</option>
+                    <option value="associate_project_manager">Associate Project Manager</option>
+                    <option value="project_manager">Project Manager</option>
+                    <option value="senior_project_manager">Senior Project Manager</option>
+                    <option value="engineering_manager">Engineering Manager</option>
+                    <option value="design_manager">Design Manager</option>
+                    <option value="project_engineer">Project Engineer</option>
+                    <option value="senior_project_engineer">Senior Project Engineer</option>
+                    <option value="procurement_manager">Procurement Manager</option>
+                    <option value="senior_procurement_manager">Senior Procurement Manager</option>
+                    <option value="field_engineer">Field Engineer</option>
+                    <option value="senior_field_engineer">Senior Field Engineer</option>
+                    <option value="qa_manager">QA Manager</option>
+                    <option value="senior_qa_manager">Senior QA Manager</option>
+                    <option value="finance_manager">Finance Manager</option>
+                    <option value="senior_finance_manager">Senior Finance Manager</option>
+                    <option value="system_engineer">System Engineer</option>
+                    <option value="senior_system_engineer">Senior System Engineer</option>
+                    <option value="network_engineer">Network Engineer</option>
+                    <option value="draughtsman">Draughtsman</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control" id="department" name="department">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Add User</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

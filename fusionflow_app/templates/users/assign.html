@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Assign User - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Assign User</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="project_id" class="form-label">Assign to Project</label>
+                <select class="form-select" id="project_id" name="project_id">
+                    <option value="">-- None --</option>
+                    {% for project in projects %}
+                    <option value="{{ project.id }}">{{ project.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="order_id" class="form-label">Assign to Order</label>
+                <select class="form-select" id="order_id" name="order_id">
+                    <option value="">-- None --</option>
+                    {% for order in orders %}
+                    <option value="{{ order.id }}">{{ order.order_number }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="shipment_id" class="form-label">Assign to Shipment</label>
+                <select class="form-select" id="shipment_id" name="shipment_id">
+                    <option value="">-- None --</option>
+                    {% for shipment in shipments %}
+                    <option value="{{ shipment.id }}">{{ shipment.tracking_number }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Assign</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

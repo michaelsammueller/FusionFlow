@@ -15,6 +15,7 @@ class Order(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=False)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    assigned_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Order details
     description = Column(Text, nullable=False)
@@ -124,8 +125,9 @@ class Order(Base):
     # Relationships
     project = relationship("Project", back_populates="orders")
     supplier = relationship("Supplier", back_populates="orders")
-    created_by_user = relationship("User", back_populates="created_orders")
+    created_by_user = relationship("User", foreign_keys=[created_by_id], back_populates="created_orders")
     shipments = relationship("Shipment", back_populates="order", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="order", cascade="all, delete-orphan")
     cost_breakdowns = relationship("CostBreakdown", back_populates="order", cascade="all, delete-orphan")
     customs_entries = relationship("CustomsEntry", back_populates="order", cascade="all, delete-orphan")
+    assigned_user = relationship("User", foreign_keys=[assigned_user_id])

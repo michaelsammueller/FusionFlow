@@ -36,3 +36,5 @@ class AuditLog(Base):
 
     # Additional metadata
     meta_data = Column(JSON)
+
+    level = Column(String(20), default="info")  # info, warning, critical, etc.

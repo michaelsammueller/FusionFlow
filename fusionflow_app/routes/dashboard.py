@@ -4,6 +4,7 @@ from backend.database import SessionLocal
 from backend.models import User, Project, Supplier, Order, Shipment
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta
+from sqlalchemy.sql.expression import literal
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
@@ -65,6 +66,17 @@ def index():
             func.avg(Project.completion_percentage).label('avg_completion')
         ).scalar() or 0
         
+        # Upcoming deadlines: next 3 from projects, orders, shipments
+        now = datetime.utcnow()
+        project_deadlines = db.query(Project.name.label('name'), Project.planned_completion_date.label('date'), literal('Project').label('type')).filter(Project.planned_completion_date > now).order_by(Project.planned_completion_date).limit(3).all()
+        order_deadlines = db.query(Order.description.label('name'), Order.requested_delivery_date.label('date'), literal('Order').label('type')).filter(Order.requested_delivery_date > now).order_by(Order.requested_delivery_date).limit(3).all()
+        shipment_deadlines = db.query(Shipment.tracking_number.label('name'), Shipment.estimated_delivery_date.label('date'), literal('Shipment').label('type')).filter(Shipment.estimated_delivery_date != None, Shipment.estimated_delivery_date > now).order_by(Shipment.estimated_delivery_date).limit(3).all()
+        # Combine and sort by date, take next 3 overall
+        all_deadlines = list(project_deadlines) + list(order_deadlines) + list(shipment_deadlines)
+        all_deadlines = [d for d in all_deadlines if d.date]
+        all_deadlines.sort(key=lambda d: d.date)
+        upcoming_deadlines = all_deadlines[:3]
+        
         return render_template('dashboard/index.html',
                              total_orders=total_orders,
                              total_projects=total_projects,
@@ -78,7 +90,8 @@ def index():
                              order_statuses=order_statuses,
                              priority_counts=priority_counts,
                              recent_orders=recent_orders,
-                             current_user=current_user)
+                             current_user=current_user,
+                             upcoming_deadlines=upcoming_deadlines)
     
     finally:
         db.close()

@@ -1,0 +1,4 @@
+- Enable search bar functionality
+- Allow managers to assign users to projects
+- Ensure that records can be deleted from the database
+- Ensure that deadlines are seen from the live ticker on the dashboard

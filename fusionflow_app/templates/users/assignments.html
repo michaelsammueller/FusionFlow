@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}My Assignments - FusionFlow{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">My Assignments</h2>
+    <div class="mb-5">
+        <h4>Projects</h4>
+        {% if projects and projects|length > 0 %}
+        <ul class="list-group mb-3">
+            {% for project in projects %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('projects.view_project', project_id=project.id) }}">{{ project.name }}</a>
+                <span class="badge bg-primary">Project</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-muted" style="color: #fff !important;">No assigned projects.</div>
+        {% endif %}
+    </div>
+    <div class="mb-5">
+        <h4>Orders</h4>
+        {% if orders and orders|length > 0 %}
+        <ul class="list-group mb-3">
+            {% for order in orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('orders.view_order', order_id=order.id) }}">Order #{{ order.order_number }}</a>
+                <span class="badge bg-success">Order</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-muted" style="color: #fff !important;">No assigned orders.</div>
+        {% endif %}
+    </div>
+    <div class="mb-5">
+        <h4>Shipments</h4>
+        {% if shipments and shipments|length > 0 %}
+        <ul class="list-group mb-3">
+            {% for shipment in shipments %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('shipments.view_shipment', shipment_id=shipment.id) }}">Shipment #{{ shipment.tracking_number }}</a>
+                <span class="badge bg-info text-dark">Shipment</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-muted" style="color: #fff !important;">No assigned shipments.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

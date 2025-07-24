@@ -248,3 +248,26 @@ def update_shipment_status(shipment_id):
         return jsonify({'success': False, 'message': str(e)})
     finally:
         db.close()
+
+@shipments_bp.route('/<int:shipment_id>/delete', methods=['POST', 'GET'])
+@login_required
+def delete_shipment(shipment_id):
+    db = get_db()
+    try:
+        shipment = db.query(Shipment).filter(Shipment.id == shipment_id).first()
+        if not shipment:
+            flash('Shipment not found.', 'danger')
+            return redirect(url_for('shipments.list_shipments'))
+        confirm = request.form.get('confirm') == 'yes'
+        if not confirm:
+            return render_template('shipments/delete_confirm.html', shipment=shipment)
+        db.delete(shipment)
+        db.commit()
+        flash('Shipment deleted successfully.', 'success')
+        return redirect(url_for('shipments.list_shipments'))
+    except Exception as e:
+        db.rollback()
+        flash('An error occurred while deleting the shipment.', 'danger')
+        return redirect(url_for('shipments.view_shipment', shipment_id=shipment_id))
+    finally:
+        db.close()

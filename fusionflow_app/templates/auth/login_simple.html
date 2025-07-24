@@ -11,8 +11,21 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
+        :root {
+            --primary-color: #fdce2f;
+            --secondary-color: #231f20;
+            --background-dark: #18181b;
+            --sidebar-bg: #231f20;
+            --card-bg: #23232a;
+            --text-main: #fff;
+            --text-muted: #b0b0b0;
+            --active-bg: #fdce2f;
+            --active-text: #231f20;
+            --border-radius: 18px;
+        }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--background-dark);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -26,17 +39,24 @@
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #1f77b4, #2ca02c);
+            background: var(--primary-color);
+            color: var(--secondary-color);
             border: none;
             border-radius: 8px;
             padding: 12px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        
         .btn-primary:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(31, 119, 180, 0.3);
+        }
+        .fusionflow-title {
+            color: var(--background-dark) !important;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -47,8 +67,8 @@
                 <div class="card shadow-lg">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
-                            <h2 class="h3 mb-2 text-primary">Welcome to FusionFlow</h2>
-                            <p class="text-muted">Order & Shipment Tracking Platform</p>
+                            <img src="{{ url_for('static', filename='images/fusion_logo.svg') }}" alt="FusionFlow Logo" class="mb-4" style="height: 72px; display: block; margin-left: auto; margin-right: auto; position: relative; left: 20px;">
+                            <p class="text-muted mt-4">Project Management Platform</p>
                         </div>
 
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -93,8 +113,7 @@
                         
                         <div class="text-center mt-4">
                             <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
-                                To request access, please contact your manager.
+                                Developed by Michael Sammueller
                             </small>
                         </div>
                     </div>

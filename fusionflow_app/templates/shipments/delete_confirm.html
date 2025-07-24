@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete Shipment - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 500px;">
+    <div class="card-body text-center">
+        <h2 class="mb-3 text-danger"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
+        <p class="mb-3">You are about to delete shipment <strong>#{{ shipment.tracking_number }}</strong>.</p>
+        <p class="mb-4">This action cannot be undone.</p>
+        <form method="POST" action="{{ url_for('shipments.delete_shipment', shipment_id=shipment.id) }}">
+            <input type="hidden" name="confirm" value="yes">
+            <button type="submit" class="btn btn-danger me-2">Delete Anyway</button>
+            <a href="{{ url_for('shipments.view_shipment', shipment_id=shipment.id) }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %} 

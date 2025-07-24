@@ -30,7 +30,7 @@ class User(Base):
     # Relationships
     created_projects = relationship("Project", foreign_keys="Project.created_by_id", back_populates="created_by_user")
     managed_projects = relationship("Project", foreign_keys="Project.project_manager_id", back_populates="project_manager_user")
-    created_orders = relationship("Order", back_populates="created_by_user")
+    created_orders = relationship("Order", foreign_keys="Order.created_by_id", back_populates="created_by_user")
     notifications = relationship(
         "Notification",
         back_populates="user",

@@ -123,6 +123,8 @@ class Shipment(Base):
     order = relationship("Order", back_populates="shipments")
     status_history = relationship("ShipmentStatusHistory", back_populates="shipment", cascade="all, delete-orphan")
     customs_entries = relationship("CustomsEntry", back_populates="shipment", cascade="all, delete-orphan")
+    assigned_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assigned_user = relationship("User", foreign_keys=[assigned_user_id])
 
 class ShipmentStatusHistory(Base):
     __tablename__ = "shipment_status_history"

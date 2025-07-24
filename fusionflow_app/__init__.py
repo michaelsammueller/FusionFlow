@@ -49,6 +49,7 @@ def create_app():
     from fusionflow_app.routes.projects import projects_bp
     from fusionflow_app.routes.suppliers import suppliers_bp
     from fusionflow_app.routes.api import api_bp
+    from fusionflow_app.routes.users import users_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -57,6 +58,7 @@ def create_app():
     app.register_blueprint(projects_bp)
     app.register_blueprint(suppliers_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(users_bp)
     
     # Add a simple test route to debug
     @app.route('/test')

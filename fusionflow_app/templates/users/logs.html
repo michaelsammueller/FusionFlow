@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}System Logs - FusionFlow{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">System Logs</h2>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Level</th>
+                    <th>Action</th>
+                    <th>Entity</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    <td>{{ log.username or 'System' }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if log.level == 'critical' %}bg-danger
+                            {% elif log.level == 'warning' %}bg-warning text-dark
+                            {% elif log.level == 'info' %}bg-info text-dark
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ log.level|capitalize }}
+                        </span>
+                    </td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.entity_type }} #{{ log.entity_id }}</td>
+                    <td>{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

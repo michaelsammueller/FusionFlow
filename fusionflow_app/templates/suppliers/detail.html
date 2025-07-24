@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Supplier Details - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 700px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Supplier Details</h2>
+        <dl class="row">
+            <dt class="col-sm-4">Name</dt>
+            <dd class="col-sm-8">{{ supplier.name }}</dd>
+            <dt class="col-sm-4">Supplier Code</dt>
+            <dd class="col-sm-8">{{ supplier.supplier_code }}</dd>
+            <dt class="col-sm-4">Country</dt>
+            <dd class="col-sm-8">{{ supplier.country }}</dd>
+            <dt class="col-sm-4">City</dt>
+            <dd class="col-sm-8">{{ supplier.city }}</dd>
+            <dt class="col-sm-4">Address</dt>
+            <dd class="col-sm-8">{{ supplier.address_line1 }}</dd>
+            <dt class="col-sm-4">Brands Supplied</dt>
+            <dd class="col-sm-8">{{ supplier.brands_supplied|join(', ') if supplier.brands_supplied else 'N/A' }}</dd>
+            <dt class="col-sm-4">Contact People</dt>
+            <dd class="col-sm-8">
+                {% if supplier.contacts and supplier.contacts|length > 0 %}
+                    <ul class="list-unstyled mb-0">
+                        {% for contact in supplier.contacts %}
+                        <li><strong>{{ contact.name }}</strong> ({{ contact.email }}, {{ contact.phone }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <span class="text-muted">No contacts listed.</span>
+                {% endif %}
+            </dd>
+            <dt class="col-sm-4">Approval Status</dt>
+            <dd class="col-sm-8">{{ supplier.approval_status }}</dd>
+        </dl>
+        <a href="{{ url_for('suppliers.list_suppliers') }}" class="btn btn-secondary mt-3">Back to Suppliers</a>
+    </div>
+</div>
+{% endblock %} 

@@ -128,49 +128,50 @@ def create_supplier():
         if request.method == 'POST':
             # Get form data
             name = request.form.get('name')
-            primary_contact_person = request.form.get('primary_contact_person')
-            primary_email = request.form.get('primary_email')
-            primary_phone = request.form.get('primary_phone')
+            brands_supplied_raw = request.form.get('brands_supplied', '')
+            brands_supplied = [b.strip() for b in brands_supplied_raw.split(',') if b.strip()]
+            contacts_json = request.form.get('contacts_json', '[]')
+            import json
+            try:
+                contacts = json.loads(contacts_json)
+            except Exception:
+                contacts = []
             country = request.form.get('country')
             address_line1 = request.form.get('address_line1')
             city = request.form.get('city')
             is_local_company = bool(request.form.get('is_local_company'))
-            
+            relationship_tag = request.form.get('relationship_tag')
+            if relationship_tag == 'Custom':
+                relationship_tag = request.form.get('custom_relationship_tag') or 'Custom'
             # Validate required fields
-            if not all([name, primary_contact_person, primary_email, country]):
-                flash('Please fill in all required fields.', 'danger')
+            if not all([name, country]) or not contacts:
+                flash('Please fill in all required fields and at least one contact.', 'danger')
                 return render_template('suppliers/create.html')
-            
             try:
                 # Generate supplier code
                 last_supplier = db.query(Supplier).order_by(desc(Supplier.id)).first()
                 supplier_code = f"SUP-{(last_supplier.id + 1 if last_supplier else 1):04d}"
-                
                 # Create new supplier
                 new_supplier = Supplier(
                     name=name,
                     supplier_code=supplier_code,
-                    primary_contact_person=primary_contact_person,
-                    primary_email=primary_email,
-                    primary_phone=primary_phone,
+                    brands_supplied=brands_supplied,
+                    contacts=contacts,
                     country=country,
                     address_line1=address_line1,
                     city=city,
                     is_local_company=is_local_company,
-                    approval_status='Pending',
-                    created_by=current_user.username
+                    approval_status=request.form.get('approval_status', 'Pending'),
+                    created_by=current_user.username,
+                    relationship_tag=relationship_tag
                 )
-                
                 db.add(new_supplier)
                 db.commit()
-                
                 flash(f'Supplier {supplier_code} created successfully!', 'success')
                 return redirect(url_for('suppliers.view_supplier', supplier_id=new_supplier.id))
-                
             except Exception as e:
                 flash('An error occurred while creating the supplier.', 'danger')
                 db.rollback()
-        
         return render_template('suppliers/create.html')
     finally:
         db.close()
@@ -185,19 +186,25 @@ def edit_supplier(supplier_id):
         if not supplier:
             flash('Supplier not found.', 'danger')
             return redirect(url_for('suppliers.list_suppliers'))
-        
         if request.method == 'POST':
-            # Update supplier fields
             supplier.name = request.form.get('name', supplier.name)
-            supplier.primary_contact_person = request.form.get('primary_contact_person', supplier.primary_contact_person)
-            supplier.primary_email = request.form.get('primary_email', supplier.primary_email)
-            supplier.primary_phone = request.form.get('primary_phone', supplier.primary_phone)
+            brands_supplied_raw = request.form.get('brands_supplied', '')
+            supplier.brands_supplied = [b.strip() for b in brands_supplied_raw.split(',') if b.strip()]
+            contacts_json = request.form.get('contacts_json', '[]')
+            import json
+            try:
+                supplier.contacts = json.loads(contacts_json)
+            except Exception:
+                pass
             supplier.country = request.form.get('country', supplier.country)
             supplier.address_line1 = request.form.get('address_line1', supplier.address_line1)
             supplier.city = request.form.get('city', supplier.city)
             supplier.is_local_company = bool(request.form.get('is_local_company'))
+            relationship_tag = request.form.get('relationship_tag')
+            if relationship_tag == 'Custom':
+                relationship_tag = request.form.get('custom_relationship_tag') or 'Custom'
+            supplier.relationship_tag = relationship_tag
             supplier.approval_status = request.form.get('approval_status', supplier.approval_status)
-            
             try:
                 db.commit()
                 flash('Supplier updated successfully!', 'success')
@@ -205,7 +212,6 @@ def edit_supplier(supplier_id):
             except Exception as e:
                 flash('An error occurred while updating the supplier.', 'danger')
                 db.rollback()
-        
         return render_template('suppliers/edit.html', supplier=supplier)
     finally:
         db.close()
@@ -262,5 +268,30 @@ def supplier_performance():
         return render_template('suppliers/performance.html',
                              top_suppliers=top_suppliers,
                              attention_suppliers=attention_suppliers)
+    finally:
+        db.close()
+
+@suppliers_bp.route('/<int:supplier_id>/delete', methods=['POST', 'GET'])
+@login_required
+def delete_supplier(supplier_id):
+    db = get_db()
+    try:
+        supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+        if not supplier:
+            flash('Supplier not found.', 'danger')
+            return redirect(url_for('suppliers.list_suppliers'))
+        has_orders = supplier.orders and len(supplier.orders) > 0
+        confirm = request.form.get('confirm') == 'yes'
+        if has_orders and not confirm:
+            # Show warning page
+            return render_template('suppliers/delete_confirm.html', supplier=supplier, order_count=len(supplier.orders))
+        db.delete(supplier)
+        db.commit()
+        flash('Supplier and all associated orders deleted successfully.' if has_orders else 'Supplier deleted successfully.', 'success')
+        return redirect(url_for('suppliers.list_suppliers'))
+    except Exception as e:
+        db.rollback()
+        flash('An error occurred while deleting the supplier.', 'danger')
+        return redirect(url_for('suppliers.edit_supplier', supplier_id=supplier_id))
     finally:
         db.close()

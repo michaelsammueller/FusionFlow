@@ -256,6 +256,27 @@
                     <i class="fas fa-building"></i> <span>Suppliers</span>
                 </a>
             </li>
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'manager', 'associate_project_manager', 'project_manager', 'senior_project_manager', 'engineering_manager', 'design_manager'] %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('users.') and not request.endpoint.endswith('assignments') and not request.endpoint.endswith('logs') %}active{% endif %}" href="{{ url_for('users.list_users') }}">
+                    <i class="fas fa-users"></i> <span>Users</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'users.assignments' %}active{% endif %}" href="{{ url_for('users.assignments') }}">
+                    <i class="fas fa-tasks"></i> <span>Assignments</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'users.logs' %}active{% endif %}" href="{{ url_for('users.logs') }}">
+                    <i class="fas fa-clipboard-list"></i> <span>Logs</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </div>
     <div class="main-content">
@@ -267,8 +288,17 @@
                 <i class="fas fa-bell"></i>
                 <i class="fas fa-question-circle"></i>
                 {% if current_user.is_authenticated %}
-                    <span class="username">{{ current_user.full_name }}</span>
-                    <img src="https://ui-avatars.com/api/?name={{ current_user.full_name|replace(' ', '+') }}&background=fdce2f&color=231f20&rounded=true&size=40" class="avatar" alt="User Avatar">
+                    <div class="dropdown">
+                        <span class="username me-2">{{ current_user.full_name }}</span>
+                        <a href="#" class="d-inline-block" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name={{ current_user.full_name|replace(' ', '+') }}&background=fdce2f&color=231f20&rounded=true&size=40" class="avatar" alt="User Avatar">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user me-2"></i>View/Edit Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                 {% endif %}
             </div>
         </nav>

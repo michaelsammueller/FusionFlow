@@ -121,6 +121,7 @@ def create_project():
             planned_completion_date = request.form.get('planned_completion_date')
             total_budget = request.form.get('total_budget')
             priority = request.form.get('priority', 'Normal')
+            status = request.form.get('status', 'Planning')
             
             # Validate required fields
             if not all([name, client_name, start_date, planned_completion_date]):
@@ -143,7 +144,7 @@ def create_project():
                     planned_completion_date=datetime.strptime(planned_completion_date, '%Y-%m-%d'),
                     total_budget=float(total_budget) if total_budget else None,
                     priority=priority,
-                    status='Planning',
+                    status=status,
                     created_by_id=current_user.id,
                     project_manager_id=current_user.id
                 )
@@ -234,5 +235,28 @@ def update_progress(project_id):
         return jsonify({'success': False, 'message': 'Invalid progress value'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        db.close()
+
+@projects_bp.route('/<int:project_id>/delete', methods=['POST', 'GET'])
+@login_required
+def delete_project(project_id):
+    db = get_db()
+    try:
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
+            flash('Project not found.', 'danger')
+            return redirect(url_for('projects.list_projects'))
+        confirm = request.form.get('confirm') == 'yes'
+        if not confirm:
+            return render_template('projects/delete_confirm.html', project=project)
+        db.delete(project)
+        db.commit()
+        flash('Project deleted successfully.', 'success')
+        return redirect(url_for('projects.list_projects'))
+    except Exception as e:
+        db.rollback()
+        flash('An error occurred while deleting the project.', 'danger')
+        return redirect(url_for('projects.view_project', project_id=project_id))
     finally:
         db.close()

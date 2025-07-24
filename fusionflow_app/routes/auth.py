@@ -3,6 +3,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from backend.database import SessionLocal
 from backend.models import User
 from backend.auth import verify_password
+from backend.models.audit_log import AuditLog
+from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -39,7 +41,6 @@ def login():
                 login_user(user, remember=remember)
                 
                 # Update last login
-                from datetime import datetime
                 user.last_login = datetime.utcnow()
                 db.commit()
                 
@@ -49,6 +50,20 @@ def login():
                     return redirect(next_page)
                 return redirect(url_for('dashboard.index'))
             else:
+                # Log failed login attempt
+                log = AuditLog(
+                    user_id=user.id if user else None,
+                    username=username,
+                    user_role=user.role if user else None,
+                    action='LOGIN_FAILED',
+                    entity_type='User',
+                    entity_id=user.id if user else None,
+                    description=f'Failed login attempt for username: {username} from IP: {request.remote_addr}',
+                    level='warning',
+                    timestamp=datetime.utcnow()
+                )
+                db.add(log)
+                db.commit()
                 flash('Invalid username or password.', 'danger')
         except Exception as e:
             flash('An error occurred during login. Please try again.', 'danger')

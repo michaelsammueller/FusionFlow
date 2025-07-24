@@ -38,6 +38,7 @@ class Project(Base):
     # Team assignments
     project_manager_id = Column(Integer, ForeignKey("users.id"))
     created_by_id = Column(Integer, ForeignKey("users.id"))
+    assigned_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Location information
     installation_location = Column(String(200))
@@ -56,5 +57,6 @@ class Project(Base):
     # Relationships
     project_manager_user = relationship("User", foreign_keys=[project_manager_id], back_populates="managed_projects")
     created_by_user = relationship("User", foreign_keys=[created_by_id], back_populates="created_projects")
+    assigned_user = relationship("User", foreign_keys=[assigned_user_id])
     orders = relationship("Order", back_populates="project", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="project")

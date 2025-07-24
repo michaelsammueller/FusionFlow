@@ -129,9 +129,12 @@ def create_order():
             # Validate required fields
             if not all([project_id, supplier_id, description, quantity, unit_price, requested_delivery_date]):
                 flash('Please fill in all required fields.', 'danger')
+                # Use the same filters as the GET path
+                projects = db.query(Project).filter(Project.status == 'Active').all()
+                suppliers = db.query(Supplier).filter(Supplier.approval_status == 'Approved').all()
                 return render_template('orders/create.html', 
-                                     projects=db.query(Project).all(),
-                                     suppliers=db.query(Supplier).all())
+                                     projects=projects,
+                                     suppliers=suppliers)
             
             try:
                 # Generate order number
@@ -238,5 +241,28 @@ def update_status(order_id):
         return jsonify({'success': False, 'message': 'Invalid status'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        db.close()
+
+@orders_bp.route('/<int:order_id>/delete', methods=['POST', 'GET'])
+@login_required
+def delete_order(order_id):
+    db = get_db()
+    try:
+        order = db.query(Order).filter(Order.id == order_id).first()
+        if not order:
+            flash('Order not found.', 'danger')
+            return redirect(url_for('orders.list_orders'))
+        confirm = request.form.get('confirm') == 'yes'
+        if not confirm:
+            return render_template('orders/delete_confirm.html', order=order)
+        db.delete(order)
+        db.commit()
+        flash('Order deleted successfully.', 'success')
+        return redirect(url_for('orders.list_orders'))
+    except Exception as e:
+        db.rollback()
+        flash('An error occurred while deleting the order.', 'danger')
+        return redirect(url_for('orders.view_order', order_id=order_id))
     finally:
         db.close()

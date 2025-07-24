@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Edit User - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Edit User</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                    <option value="associate_project_manager" {% if user.role == 'associate_project_manager' %}selected{% endif %}>Associate Project Manager</option>
+                    <option value="project_manager" {% if user.role == 'project_manager' %}selected{% endif %}>Project Manager</option>
+                    <option value="engineering_manager" {% if user.role == 'engineering_manager' %}selected{% endif %}>Engineering Manager</option>
+                    <option value="design_manager" {% if user.role == 'design_manager' %}selected{% endif %}>Design Manager</option>
+                    <option value="senior_project_manager" {% if user.role == 'senior_project_manager' %}selected{% endif %}>Senior Project Manager</option>
+                    <option value="project_engineer" {% if user.role == 'project_engineer' %}selected{% endif %}>Project Engineer</option>
+                    <option value="senior_project_engineer" {% if user.role == 'senior_project_engineer' %}selected{% endif %}>Senior Project Engineer</option>
+                    <option value="procurement_manager" {% if user.role == 'procurement_manager' %}selected{% endif %}>Procurement Manager</option>
+                    <option value="senior_procurement_manager" {% if user.role == 'senior_procurement_manager' %}selected{% endif %}>Senior Procurement Manager</option>
+                    <option value="field_engineer" {% if user.role == 'field_engineer' %}selected{% endif %}>Field Engineer</option>
+                    <option value="senior_field_engineer" {% if user.role == 'senior_field_engineer' %}selected{% endif %}>Senior Field Engineer</option>
+                    <option value="qa_manager" {% if user.role == 'qa_manager' %}selected{% endif %}>QA Manager</option>
+                    <option value="senior_qa_manager" {% if user.role == 'senior_qa_manager' %}selected{% endif %}>Senior QA Manager</option>
+                    <option value="finance_manager" {% if user.role == 'finance_manager' %}selected{% endif %}>Finance Manager</option>
+                    <option value="senior_finance_manager" {% if user.role == 'senior_finance_manager' %}selected{% endif %}>Senior Finance Manager</option>
+                    <option value="system_engineer" {% if user.role == 'system_engineer' %}selected{% endif %}>System Engineer</option>
+                    <option value="senior_system_engineer" {% if user.role == 'senior_system_engineer' %}selected{% endif %}>Senior System Engineer</option>
+                    <option value="network_engineer" {% if user.role == 'network_engineer' %}selected{% endif %}>Network Engineer</option>
+                    <option value="draughtsman" {% if user.role == 'draughtsman' %}selected{% endif %}>Draughtsman</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control" id="department" name="department" value="{{ user.department }}">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" {% if user.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Active</label>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Update User</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Add Supplier - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Add Supplier</h2>
+        <form method="POST" id="supplier-form">
+            <div class="mb-3">
+                <label for="name" class="form-label">Supplier Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="brands_supplied" class="form-label">Brands Supplied</label>
+                <input type="text" class="form-control" id="brands_supplied" name="brands_supplied" placeholder="Comma-separated (e.g. BrandA, BrandB)">
+            </div>
+            <div id="contacts-section">
+                <label class="form-label">Contact People</label>
+                <div class="contact-entry row g-2 mb-2">
+                    <div class="col">
+                        <input type="text" class="form-control" name="contact_name" placeholder="Name" required>
+                    </div>
+                    <div class="col">
+                        <input type="email" class="form-control" name="contact_email" placeholder="Email" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="contact_phone" placeholder="Phone">
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-danger btn-remove-contact" tabindex="-1">&times;</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary mb-3" id="add-contact-btn">Add Another Contact</button>
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" required>
+            </div>
+            <div class="mb-3">
+                <label for="address_line1" class="form-label">Address Line 1</label>
+                <input type="text" class="form-control" id="address_line1" name="address_line1">
+            </div>
+            <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city">
+            </div>
+            <div class="mb-3">
+                <label for="relationship_tag" class="form-label">Supplier Relationship</label>
+                <select class="form-select" id="relationship_tag" name="relationship_tag_select" required>
+                    <option value="New">New</option>
+                    <option value="Established">Established</option>
+                    <option value="Avoid">Avoid</option>
+                    <option value="Competitor">Competitor</option>
+                    <option value="Custom">Custom</option>
+                </select>
+                <input type="text" class="form-control mt-2 d-none" id="custom_relationship_tag" name="custom_relationship_tag" placeholder="Enter custom relationship">
+                <input type="hidden" name="relationship_tag" id="relationship_tag_hidden">
+            </div>
+            <div class="mb-3">
+                <label for="approval_status" class="form-label">Supplier Status</label>
+                <select class="form-select" id="approval_status" name="approval_status" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="is_local_company" name="is_local_company">
+                <label class="form-check-label" for="is_local_company">Is Local Company?</label>
+            </div>
+            <input type="hidden" name="contacts_json" id="contacts_json">
+            <button type="submit" class="btn btn-primary w-100">Add Supplier</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+// Add/remove contact fields dynamically
+const contactsSection = document.getElementById('contacts-section');
+const addContactBtn = document.getElementById('add-contact-btn');
+addContactBtn.addEventListener('click', function() {
+    const entry = document.createElement('div');
+    entry.className = 'contact-entry row g-2 mb-2';
+    entry.innerHTML = `
+        <div class="col">
+            <input type="text" class="form-control" name="contact_name" placeholder="Name" required>
+        </div>
+        <div class="col">
+            <input type="email" class="form-control" name="contact_email" placeholder="Email" required>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" name="contact_phone" placeholder="Phone">
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-danger btn-remove-contact" tabindex="-1">&times;</button>
+        </div>
+    `;
+    contactsSection.appendChild(entry);
+});
+contactsSection.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-remove-contact')) {
+        e.target.closest('.contact-entry').remove();
+    }
+});
+// On submit, collect all contacts into a JSON array
+const supplierForm = document.getElementById('supplier-form');
+supplierForm.addEventListener('submit', function(e) {
+    const contactEntries = contactsSection.querySelectorAll('.contact-entry');
+    const contacts = [];
+    contactEntries.forEach(function(entry) {
+        const name = entry.querySelector('input[name="contact_name"]').value;
+        const email = entry.querySelector('input[name="contact_email"]').value;
+        const phone = entry.querySelector('input[name="contact_phone"]').value;
+        if (name && email) {
+            contacts.push({name, email, phone});
+        }
+    });
+    document.getElementById('contacts_json').value = JSON.stringify(contacts);
+});
+// Status tag custom input logic
+const relationshipTagSelect = document.getElementById('relationship_tag');
+const customRelationshipInput = document.getElementById('custom_relationship_tag');
+const relationshipTagHidden = document.getElementById('relationship_tag_hidden');
+function updateRelationshipTagHidden() {
+    if (relationshipTagSelect.value === 'Custom') {
+        relationshipTagHidden.value = customRelationshipInput.value || 'Custom';
+    } else {
+        relationshipTagHidden.value = relationshipTagSelect.value;
+    }
+}
+relationshipTagSelect.addEventListener('change', function() {
+    if (this.value === 'Custom') {
+        customRelationshipInput.classList.remove('d-none');
+        customRelationshipInput.required = true;
+    } else {
+        customRelationshipInput.classList.add('d-none');
+        customRelationshipInput.required = false;
+    }
+    updateRelationshipTagHidden();
+});
+customRelationshipInput.addEventListener('input', updateRelationshipTagHidden);
+relationshipTagSelect.addEventListener('input', updateRelationshipTagHidden);
+// On form submit, ensure hidden value is set
+supplierForm.addEventListener('submit', function(e) {
+    updateRelationshipTagHidden();
+    const contactEntries = contactsSection.querySelectorAll('.contact-entry');
+    const contacts = [];
+    contactEntries.forEach(function(entry) {
+        const name = entry.querySelector('input[name="contact_name"]').value;
+        const email = entry.querySelector('input[name="contact_email"]').value;
+        const phone = entry.querySelector('input[name="contact_phone"]').value;
+        if (name && email) {
+            contacts.push({name, email, phone});
+        }
+    });
+    document.getElementById('contacts_json').value = JSON.stringify(contacts);
+});
+// Set initial value
+updateRelationshipTagHidden();
+</script>
+{% endblock %} 

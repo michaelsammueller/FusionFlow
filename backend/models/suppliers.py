@@ -10,13 +10,11 @@ class Supplier(Base):
     name = Column(String(200), nullable=False, index=True)
     supplier_code = Column(String(50), unique=True, nullable=False, index=True)
 
-    # Contact information
-    primary_contact_person = Column(String(100))
-    primary_email = Column(String(255))
-    primary_phone = Column(String(50))
-    secondary_contact_person = Column(String(100))
-    secondary_email = Column(String(255))
-    secondary_phone = Column(String(50))
+    # Contact information (now as a list of contacts)
+    contacts = Column(JSON)  # [{"name": "John Doe", "email": "john@x.com", "phone": "+123"}, ...]
+
+    # Brands supplied
+    brands_supplied = Column(JSON)  # ["BrandA", "BrandB", ...]
 
     # Address information
     address_line1 = Column(String(200))
@@ -68,6 +66,9 @@ class Supplier(Base):
     approval_date = Column(DateTime)
     approval_notes = Column(Text)
 
+    # Relationship tag (user-defined or predefined)
+    relationship_tag = Column(String(50), default="New")
+
     # Relationship management
     account_manager = Column(String(100))  # Internal person managing this supplier
     last_communication_date = Column(DateTime)
@@ -79,5 +80,5 @@ class Supplier(Base):
     created_by = Column(String(100))
 
     # Relationships
-    orders = relationship("Order", back_populates="supplier")
+    orders = relationship("Order", back_populates="supplier", cascade="all, delete-orphan")
     performance_records = relationship("SupplierPerformance", back_populates="supplier", cascade="all, delete-orphan")

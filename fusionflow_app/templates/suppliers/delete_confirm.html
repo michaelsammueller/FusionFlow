@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete Supplier - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 500px;">
+    <div class="card-body text-center">
+        <h2 class="mb-3 text-danger"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
+        <p class="mb-3">This supplier (<strong>{{ supplier.name }}</strong>) has <strong>{{ order_count }}</strong> associated order{{ 's' if order_count != 1 else '' }}.</p>
+        <p class="mb-4">Deleting this supplier will <strong>permanently delete all their orders</strong> as well. This action cannot be undone.</p>
+        <form method="POST" action="{{ url_for('suppliers.delete_supplier', supplier_id=supplier.id) }}">
+            <input type="hidden" name="confirm" value="yes">
+            <button type="submit" class="btn btn-danger me-2">Delete Anyway</button>
+            <a href="{{ url_for('suppliers.edit_supplier', supplier_id=supplier.id) }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %} 

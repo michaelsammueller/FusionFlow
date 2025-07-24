@@ -34,6 +34,29 @@ from backend.models import (
 from backend.models.audit_log import AuditLog
 from backend.models.system_settings import SystemSettings
 
+# Migration: add_assigned_user_id_to_projects_orders_shipments.py
+import sqlalchemy as sa
+from sqlalchemy import MetaData, Table, Column, Integer, ForeignKey
+
+def migrate_add_assigned_user_id(engine):
+    meta = MetaData()
+    meta.reflect(bind=engine)
+    for table_name in ['projects', 'orders', 'shipments']:
+        table = meta.tables.get(table_name)
+        if table is not None and 'assigned_user_id' not in table.c:
+            with engine.connect() as conn:
+                conn.execute(sa.text(f'ALTER TABLE {table_name} ADD COLUMN assigned_user_id INTEGER REFERENCES users(id)'))
+    print('Migration: assigned_user_id added to projects, orders, shipments.')
+
+def migrate_add_level_to_audit_logs(engine):
+    meta = MetaData()
+    meta.reflect(bind=engine)
+    table = meta.tables.get('audit_logs')
+    if table is not None and 'level' not in table.c:
+        with engine.connect() as conn:
+            conn.execute(sa.text('ALTER TABLE audit_logs ADD COLUMN level VARCHAR(20) DEFAULT "info"'))
+    print('Migration: level column added to audit_logs.')
+
 def create_database(recreate=False, seed=False):
     """
     Create the database and all tables.

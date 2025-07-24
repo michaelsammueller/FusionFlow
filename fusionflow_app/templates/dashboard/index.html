@@ -5,15 +5,53 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <p class="text-muted">Welcome back, {{ current_user.full_name }}!</p>
+        <p class="text-white">Welcome back, {{ current_user.full_name }}!</p>
     </div>
     <div class="text-end">
-        <small class="text-muted">
+        <small class="text-white">
             <i class="fas fa-clock me-1"></i>
             Last updated: <span id="last-updated"></span>
         </small>
     </div>
 </div>
+
+<div class="ticker-container mb-3">
+    <div class="ticker-text">
+        {% if upcoming_deadlines and upcoming_deadlines|length > 0 %}
+            <i class="fas fa-bell me-2"></i>
+            {% for d in upcoming_deadlines %}
+                <span class="me-4">
+                    <strong>{{ d.type }}:</strong> {{ d.name }}
+                    <span class="badge bg-warning text-dark ms-2">{{ d.date.strftime('%d/%m/%Y') }}</span>
+                </span>
+            {% endfor %}
+        {% else %}
+            <span>No upcoming deadlines.</span>
+        {% endif %}
+    </div>
+</div>
+<style>
+.ticker-container {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(253, 206, 47, 0.12);
+    border-radius: 12px;
+    padding: 8px 0 8px 0;
+    position: relative;
+}
+.ticker-text {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: ticker-scroll 18s linear infinite;
+    font-size: 1.1rem;
+    color: #fff;
+}
+@keyframes ticker-scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+</style>
 
 <!-- Key Metrics Row -->
 <div class="row mb-4">
@@ -65,7 +103,7 @@
             <div class="card-body text-center">
                 <i class="fas fa-building fa-2x text-info mb-2"></i>
                 <h4 class="mb-0">{{ total_suppliers }}</h4>
-                <small class="text-muted">Total Suppliers</small>
+                <small class="text-white">Total Suppliers</small>
             </div>
         </div>
     </div>
@@ -75,7 +113,7 @@
             <div class="card-body text-center">
                 <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
                 <h4 class="mb-0">{{ attention_orders }}</h4>
-                <small class="text-muted">Need Attention</small>
+                <small class="text-white">Need Attention</small>
             </div>
         </div>
     </div>
@@ -85,7 +123,7 @@
             <div class="card-body text-center">
                 <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
                 <h4 class="mb-0">{{ project_completion }}%</h4>
-                <small class="text-muted">Avg Completion</small>
+                <small class="text-white">Avg Completion</small>
             </div>
         </div>
     </div>
@@ -95,7 +133,7 @@
             <div class="card-body text-center">
                 <i class="fas fa-boxes fa-2x text-primary mb-2"></i>
                 <h4 class="mb-0">{{ total_shipments }}</h4>
-                <small class="text-muted">Total Shipments</small>
+                <small class="text-white">Total Shipments</small>
             </div>
         </div>
     </div>
@@ -178,7 +216,7 @@
                         <td>{{ '{:,.2f}'.format(order.total_amount or 0) }} {{ order.currency }}</td>
                         <td>{{ order.supplier.name if order.supplier else 'N/A' }}</td>
                         <td>{{ order.project.name if order.project else 'N/A' }}</td>
-                        <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -196,91 +234,91 @@
 
 {% block extra_js %}
 <script>
-    // Update last updated time
-    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    // Update last updated time in DD/MM/YYYY HH:mm:ss format
+    const lastUpdated = document.getElementById('last-updated');
+    if (lastUpdated) {
+        const now = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const formatted = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        lastUpdated.textContent = formatted;
+    }
+
+    // Defensive: Chart.js loaded, data is object, canvas exists
+    function isObject(obj) {
+        return obj && typeof obj === 'object' && !Array.isArray(obj);
+    }
 
     // Order Status Chart
     const orderStatusCtx = document.getElementById('orderStatusChart');
-    const orderStatusData = {{ order_statuses|tojson }};
-    if (orderStatusCtx && window.Chart) {
-        new Chart(orderStatusCtx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(orderStatusData),
-                datasets: [{
-                    data: Object.values(orderStatusData),
-                    backgroundColor: [
-                        '#fdce2f', // Fusion yellow
-                        '#231f20', // Fusion dark
-                        '#fff',    // White
-                        '#b0b0b0', // Muted gray
-                        '#23232a', // Card dark
-                        '#18181b', // Main bg
-                        '#8c564b', // Accent
-                        '#7f7f7f'  // Accent
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#18181b'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+    const orderStatusData = {{ order_statuses|tojson|safe }};
+    try {
+        if (orderStatusCtx && window.Chart && isObject(orderStatusData) && Object.keys(orderStatusData).length > 0) {
+            new Chart(orderStatusCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(orderStatusData),
+                    datasets: [{
+                        data: Object.values(orderStatusData),
+                        backgroundColor: [
+                            '#fdce2f', '#231f20', '#fff', '#b0b0b0', '#23232a', '#18181b', '#8c564b', '#7f7f7f'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#18181b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
                 }
-            }
-        });
+            });
+        } else if (orderStatusCtx) {
+            orderStatusCtx.parentElement.innerHTML = '<div class="text-muted">No order status data available.</div>';
+        }
+    } catch (e) {
+        console.error('Order Status Chart error:', e);
     }
 
     // Priority Chart
     const priorityCtx = document.getElementById('priorityChart');
-    const priorityData = {{ priority_counts|tojson }};
-    if (priorityCtx && window.Chart) {
-        new Chart(priorityCtx.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: Object.keys(priorityData),
-                datasets: [{
-                    label: 'Orders',
-                    data: Object.values(priorityData),
-                    backgroundColor: [
-                        '#fdce2f', // Fusion yellow
-                        '#231f20', // Fusion dark
-                        '#fff',    // White
-                        '#b0b0b0'  // Muted gray
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            color: '#fff'
+    const priorityData = {{ priority_counts|tojson|safe }};
+    try {
+        if (priorityCtx && window.Chart && isObject(priorityData) && Object.keys(priorityData).length > 0) {
+            new Chart(priorityCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(priorityData),
+                    datasets: [{
+                        label: 'Orders',
+                        data: Object.values(priorityData),
+                        backgroundColor: [
+                            '#fdce2f', '#231f20', '#fff', '#b0b0b0'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: '#fff' },
+                            grid: { color: '#23232a' }
                         },
-                        grid: {
-                            color: '#23232a'
+                        x: {
+                            ticks: { color: '#fff' },
+                            grid: { color: '#23232a' }
                         }
                     },
-                    x: {
-                        ticks: { color: '#fff' },
-                        grid: { color: '#23232a' }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                    plugins: { legend: { display: false } }
                 }
-            }
-        });
+            });
+        } else if (priorityCtx) {
+            priorityCtx.parentElement.innerHTML = '<div class="text-muted">No priority data available.</div>';
+        }
+    } catch (e) {
+        console.error('Priority Chart error:', e);
     }
 
     // Auto-refresh dashboard every 5 minutes

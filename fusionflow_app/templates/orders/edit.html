@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Edit Order - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Edit Order</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="2" required>{{ order.description }}</textarea>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="{{ order.quantity }}" required>
+                </div>
+                <div class="col">
+                    <label for="unit_price" class="form-label">Unit Price</label>
+                    <input type="number" class="form-control" id="unit_price" name="unit_price" min="0" step="0.01" value="{{ order.unit_price }}" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="requested_delivery_date" class="form-label">Requested Delivery Date</label>
+                <input type="date" class="form-control" id="requested_delivery_date" name="requested_delivery_date" value="{{ order.requested_delivery_date.strftime('%Y-%m-%d') if order.requested_delivery_date else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priority">
+                    <option value="Normal" {% if order.priority == 'Normal' %}selected{% endif %}>Normal</option>
+                    <option value="High" {% if order.priority == 'High' %}selected{% endif %}>High</option>
+                    <option value="Critical" {% if order.priority == 'Critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <input type="text" class="form-control" id="status" name="status" value="{{ order.status }}">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

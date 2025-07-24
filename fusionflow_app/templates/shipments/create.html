@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Create Shipment - FusionFlow{% endblock %}
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Create Shipment</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="order_id" class="form-label">Order</label>
+                <select class="form-select" id="order_id" name="order_id" required>
+                    <option value="">Select Order</option>
+                    {% for order in orders %}
+                        <option value="{{ order.id }}">{{ order.order_number }} - {{ order.description[:30] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="tracking_number" class="form-label">Tracking Number</label>
+                <input type="text" class="form-control" id="tracking_number" name="tracking_number" required>
+            </div>
+            <div class="mb-3">
+                <label for="carrier" class="form-label">Carrier</label>
+                <input type="text" class="form-control" id="carrier" name="carrier" required>
+            </div>
+            <div class="mb-3">
+                <label for="service_type" class="form-label">Service Type</label>
+                <input type="text" class="form-control" id="service_type" name="service_type">
+            </div>
+            <div class="mb-3">
+                <label for="origin_address" class="form-label">Origin Address</label>
+                <textarea class="form-control" id="origin_address" name="origin_address" rows="2" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="destination_address" class="form-label">Destination Address</label>
+                <textarea class="form-control" id="destination_address" name="destination_address" rows="2" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Create Shipment</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 
