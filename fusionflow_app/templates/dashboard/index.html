@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FusionFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <p class="text-muted">Welcome back, {{ current_user.full_name }}!</p>
+    </div>
+    <div class="text-end">
+        <small class="text-muted">
+            <i class="fas fa-clock me-1"></i>
+            Last updated: <span id="last-updated"></span>
+        </small>
+    </div>
+</div>
+
+<!-- Key Metrics Row -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="fas fa-shopping-cart fa-2x mb-3 opacity-75"></i>
+                <h3 class="mb-0">{{ total_orders }}</h3>
+                <p class="mb-0">Total Orders</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="fas fa-project-diagram fa-2x mb-3 opacity-75"></i>
+                <h3 class="mb-0">{{ active_projects }}</h3>
+                <p class="mb-0">Active Projects</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="fas fa-shipping-fast fa-2x mb-3 opacity-75"></i>
+                <h3 class="mb-0">{{ in_transit_shipments }}</h3>
+                <p class="mb-0">In Transit</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x mb-3 opacity-75"></i>
+                <h3 class="mb-0">{{ recent_deliveries }}</h3>
+                <p class="mb-0">Recent Deliveries</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Metrics Row -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-2x text-info mb-2"></i>
+                <h4 class="mb-0">{{ total_suppliers }}</h4>
+                <small class="text-muted">Total Suppliers</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                <h4 class="mb-0">{{ attention_orders }}</h4>
+                <small class="text-muted">Need Attention</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                <h4 class="mb-0">{{ project_completion }}%</h4>
+                <small class="text-muted">Avg Completion</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-boxes fa-2x text-primary mb-2"></i>
+                <h4 class="mb-0">{{ total_shipments }}</h4>
+                <small class="text-muted">Total Shipments</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Order Status Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Priority Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="priorityChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i>Recent Orders
+        </h5>
+        <a href="{{ url_for('orders.list_orders') }}" class="btn btn-sm btn-outline-primary">
+            View All Orders <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="card-body">
+        {% if recent_orders %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Amount</th>
+                        <th>Supplier</th>
+                        <th>Project</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('orders.view_order', order_id=order.id) }}" class="text-decoration-none">
+                                <strong>{{ order.order_number }}</strong>
+                            </a>
+                        </td>
+                        <td>{{ order.description[:50] }}{% if order.description|length > 50 %}...{% endif %}</td>
+                        <td>
+                            <span class="badge bg-{% if order.status == 'Delivered' %}success{% elif order.status in ['Draft', 'Pending Approval'] %}warning{% elif order.status == 'Cancelled' %}danger{% else %}primary{% endif %} status-badge">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="priority-{{ order.priority.lower() if order.priority else 'low' }}">
+                                <i class="fas fa-circle"></i> {{ order.priority or 'Normal' }}
+                            </span>
+                        </td>
+                        <td>{{ '{:,.2f}'.format(order.total_amount or 0) }} {{ order.currency }}</td>
+                        <td>{{ order.supplier.name if order.supplier else 'N/A' }}</td>
+                        <td>{{ order.project.name if order.project else 'N/A' }}</td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No orders found. <a href="{{ url_for('orders.create_order') }}">Create your first order</a>.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Update last updated time
+    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+
+    // Order Status Chart
+    const orderStatusCtx = document.getElementById('orderStatusChart');
+    const orderStatusData = {{ order_statuses|tojson }};
+    if (orderStatusCtx && window.Chart) {
+        new Chart(orderStatusCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(orderStatusData),
+                datasets: [{
+                    data: Object.values(orderStatusData),
+                    backgroundColor: [
+                        '#fdce2f', // Fusion yellow
+                        '#231f20', // Fusion dark
+                        '#fff',    // White
+                        '#b0b0b0', // Muted gray
+                        '#23232a', // Card dark
+                        '#18181b', // Main bg
+                        '#8c564b', // Accent
+                        '#7f7f7f'  // Accent
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#18181b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Priority Chart
+    const priorityCtx = document.getElementById('priorityChart');
+    const priorityData = {{ priority_counts|tojson }};
+    if (priorityCtx && window.Chart) {
+        new Chart(priorityCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(priorityData),
+                datasets: [{
+                    label: 'Orders',
+                    data: Object.values(priorityData),
+                    backgroundColor: [
+                        '#fdce2f', // Fusion yellow
+                        '#231f20', // Fusion dark
+                        '#fff',    // White
+                        '#b0b0b0'  // Muted gray
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#fff'
+                        },
+                        grid: {
+                            color: '#23232a'
+                        }
+                    },
+                    x: {
+                        ticks: { color: '#fff' },
+                        grid: { color: '#23232a' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Auto-refresh dashboard every 5 minutes
+    setInterval(function() {
+        location.reload();
+    }, 300000);
+</script>
+{% endblock %}

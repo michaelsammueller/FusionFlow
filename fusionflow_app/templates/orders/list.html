@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Orders - FusionFlow{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Orders</h1>
+    <a href="#" class="btn btn-primary">Create Order</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Project</th>
+                        <th>Supplier</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>Order Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.order_number }}</strong></td>
+                        <td>{{ order.project.name if order.project else 'N/A' }}</td>
+                        <td>{{ order.supplier.name if order.supplier else 'N/A' }}</td>
+                        <td>{{ order.description|truncate(40) }}</td>
+                        <td><span class="badge status-badge">{{ order.status }}</span></td>
+                        <td><span class="priority-{{ order.priority|lower }}">{{ order.priority }}</span></td>
+                        <td>{{ '{:,.2f}'.format(order.total_amount or 0) }}</td>
+                        <td>{{ order.currency }}</td>
+                        <td>{{ order.order_date.strftime('%Y-%m-%d') if order.order_date else '' }}</td>
+                        <td><a href="{{ url_for('orders.view_order', order_id=order.id) }}" class="btn btn-sm btn-primary">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

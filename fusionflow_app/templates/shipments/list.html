@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Shipments - FusionFlow{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Shipments</h1>
+    <a href="#" class="btn btn-primary">Create Shipment</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Tracking #</th>
+                        <th>Order #</th>
+                        <th>Carrier</th>
+                        <th>Status</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Ship Date</th>
+                        <th>Estimated Delivery</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shipment in shipments %}
+                    <tr>
+                        <td><strong>{{ shipment.tracking_number }}</strong></td>
+                        <td>{{ shipment.order.order_number if shipment.order else 'N/A' }}</td>
+                        <td>{{ shipment.carrier }}</td>
+                        <td><span class="badge status-badge">{{ shipment.current_status }}</span></td>
+                        <td>{{ shipment.origin_city }}, {{ shipment.origin_country }}</td>
+                        <td>{{ shipment.destination_city }}, {{ shipment.destination_country }}</td>
+                        <td>{{ shipment.ship_date.strftime('%Y-%m-%d') if shipment.ship_date else '' }}</td>
+                        <td>{{ shipment.estimated_delivery_date.strftime('%Y-%m-%d') if shipment.estimated_delivery_date else '' }}</td>
+                        <td><a href="{{ url_for('shipments.view_shipment', shipment_id=shipment.id) }}" class="btn btn-sm btn-primary">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers - FusionFlow{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Suppliers</h1>
+    <a href="#" class="btn btn-primary">Add Supplier</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td><strong>{{ supplier.name }}</strong></td>
+                        <td>{{ supplier.supplier_code }}</td>
+                        <td>{{ supplier.primary_contact_person }}</td>
+                        <td>{{ supplier.primary_email }}</td>
+                        <td>{{ supplier.primary_phone }}</td>
+                        <td>{{ supplier.country }}</td>
+                        <td><span class="badge status-badge">{{ supplier.approval_status }}</span></td>
+                        <td><a href="{{ url_for('suppliers.view_supplier', supplier_id=supplier.id) }}" class="btn btn-sm btn-primary">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

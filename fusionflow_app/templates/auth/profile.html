@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - FusionFlow{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user me-2"></i>User Profile
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" value="{{ user.full_name }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" value="{{ user.role | title }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            <input type="text" class="form-control" value="{{ user.department or 'Not specified' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Timezone</label>
+                            <input type="text" class="form-control" value="{{ user.timezone }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Language</label>
+                            <input type="text" class="form-control" value="{{ 'English' if user.language == 'en' else 'Arabic' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Last Login</label>
+                            <input type="text" class="form-control" value="{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'Never' }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cog me-2"></i>Account Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" disabled>
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="fas fa-key me-2"></i>Change Password
+                    </button>
+                    <button class="btn btn-outline-info" disabled>
+                        <i class="fas fa-bell me-2"></i>Notification Settings
+                    </button>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        Member since {{ user.created_at.strftime('%B %Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Account Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge bg-{{ 'success' if user.is_active else 'danger' }} me-2">
+                        {{ 'Active' if user.is_active else 'Inactive' }}
+                    </span>
+                    <small class="text-muted">Account Status</small>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-2">{{ user.role | title }}</span>
+                    <small class="text-muted">Access Level</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
